@@ -16,15 +16,16 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 /**
- * Created on 15.09.18
- * TODO: Add comment
+ * REST resource class responsible for operations with account
  */
-@Path("account-manager")
-class AccountManager {
+@Path("account")
+class AccountResource {
 
     private val logger = LogManager.getLogger(javaClass)
 
     private val gson = Gson()
+
+    private val accountService = AccountService.getInstance()
 
     @PUT
     @Path("create")
@@ -36,7 +37,7 @@ class AccountManager {
             logger.info("Incoming request: $request")
             val createRequest = gson.fromJson(request, CreateAccountRequest::class.java)
             logger.info("Incoming CreateAccountRequest: $createRequest")
-            val accountCode = AccountService.createAccount(createRequest)
+            val accountCode = accountService.createAccount(createRequest)
             logger.info("Created account code: $accountCode")
             val response = gson.toJson(accountCode)
             Response.ok(response).build()
@@ -51,7 +52,7 @@ class AccountManager {
     @Produces(MediaType.APPLICATION_JSON)
     fun receiveAccountBalance(@PathParam("accountCode") accountCode: String): Response {
         return try {
-            val response = gson.toJson(AccountService.receiveBalance(accountCode))
+            val response = gson.toJson(accountService.receiveBalance(accountCode))
             Response.ok(response).build()
         } catch (e: Exception) {
             logger.error("Error while requesting an account balance", e)
@@ -70,7 +71,7 @@ class AccountManager {
             logger.info("Incoming request: $request")
             val changeBalanceRequest = gson.fromJson(request, ChangeBalanceRequest::class.java)
             logger.info("Incoming ChangeBalanceRequest: $changeBalanceRequest")
-            val account = AccountService.changeBalance(changeBalanceRequest)
+            val account = accountService.changeBalance(changeBalanceRequest)
             logger.info("Updated account: $account")
             val response = gson.toJson(account)
             Response.ok(response).build()
@@ -89,7 +90,7 @@ class AccountManager {
         // account code, secret word (TAN)
         return try {
             val closeAccountRequest = gson.fromJson(request, CloseAccountRequest::class.java)
-            val account = AccountService.closeAccount(closeAccountRequest)
+            val account = accountService.closeAccount(closeAccountRequest)
             val response = gson.toJson(account)
             Response.ok(response).build()
         } catch (e: Exception) {

@@ -1,12 +1,12 @@
 package test.interview.config
 
-import org.apache.commons.configuration2.builder.fluent.Configurations
+import org.apache.commons.configuration2.PropertiesConfiguration
 
 /**
  * Created on 17.09.18
  * TODO: Add comment
  */
-object AppConfig {
+class AppConfig(properties: PropertiesConfiguration) {
 
     val appHost: String
     val appPort: Int
@@ -15,11 +15,9 @@ object AppConfig {
     val tanHigherBound: Int
     val tanNumber: Int
 
-    init {
-        val configs = Configurations()
-        val configFileName = System.getenv("CONFIG_FILE_NAME") ?: "config.properties"
-        val properties = configs.properties(configFileName)
+    companion object : SingletonHolder<AppConfig, PropertiesConfiguration>(::AppConfig)
 
+    init {
         appHost = properties.getString("app.host")
         appPort = properties.getInt("app.port")
 

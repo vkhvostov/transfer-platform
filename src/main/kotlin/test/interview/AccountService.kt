@@ -2,6 +2,7 @@ package test.interview
 
 import org.apache.logging.log4j.LogManager
 import test.interview.config.AppConfig
+import test.interview.config.SingletonHolder
 import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.model.ChangeBalanceRequest
@@ -18,11 +19,13 @@ import java.util.concurrent.ThreadLocalRandom
  * Created on 15.09.18
  * TODO: Add comment
  */
-object AccountService {
+class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
 
     private val logger = LogManager.getLogger(javaClass)
 
-    private val accounts = ConcurrentHashMap<UUID, Account>()
+    private val appConfig = AppConfig.getInstance()
+
+    companion object : SingletonHolder<AccountService, ConcurrentHashMap<UUID, Account>>(::AccountService)
 
     // returns null when new account is created
     fun createAccount(createRequest: CreateAccountRequest): UUID {
@@ -30,6 +33,7 @@ object AccountService {
         val balance = BigDecimal(createRequest.initialBalance)
         val currency = Currency.getInstance(createRequest.currency)
         val account = Account(accountCode, createRequest.accountHolder, balance, currency, AccountStatus.OPEN, generateTANs())
+        logger.info("Created account: $account")
 
         accounts[accountCode] = account
         return accountCode
@@ -75,6 +79,6 @@ object AccountService {
 
     private fun generateTANs(): List<String> =
         generateSequence {
-            ThreadLocalRandom.current().nextInt(AppConfig.tanLowerBound, AppConfig.tanHigherBound).toString()
-        }.take(AppConfig.tanNumber).toList() + listOf()
+            ThreadLocalRandom.current().nextInt(appConfig.tanLowerBound, appConfig.tanHigherBound).toString()
+        }.take(appConfig.tanNumber).toList()
 }

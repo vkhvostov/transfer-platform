@@ -32,6 +32,9 @@ dependencies {
     // Configuration
     compile "org.apache.commons:commons-configuration2:2.1.1"
 
+    // Commons
+    compile "commons-beanutils:commons-beanutils:1.9.3"
+
     // Jersey
     compile "org.glassfish.jersey.containers:jersey-container-servlet:$jersey_version"
     compile "org.glassfish.jersey.containers:jersey-container-jdk-http:$jersey_version"
