@@ -13,6 +13,7 @@ import test.interview.model.CreateAccountRequest
 import test.interview.model.exception.AccountNotFoundException
 import test.interview.model.exception.IllegalOperation
 import test.interview.service.AccountService
+import test.interview.storage.InMemoryStorage
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -20,13 +21,15 @@ import java.util.concurrent.ConcurrentHashMap
 class AccountServiceTest {
     
     private lateinit var accounts: ConcurrentHashMap<UUID, Account>
+    private lateinit var storage: InMemoryStorage
     private lateinit var accountService: AccountService
 
     @Before
     fun setUp() {
         AppConfig.getInstance(Configurations().properties("test-config.properties"))
         accounts = ConcurrentHashMap()
-        accountService = AccountService(accounts)
+        storage = InMemoryStorage(accounts)
+        accountService = AccountService(storage)
     }
 
     @Test

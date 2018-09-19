@@ -10,21 +10,21 @@ import test.interview.model.CloseAccountRequest
 import test.interview.model.CreateAccountRequest
 import test.interview.model.exception.AccountNotFoundException
 import test.interview.model.exception.IllegalOperation
+import test.interview.storage.InMemoryStorage
 import java.math.BigDecimal
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
 /**
  * Service responsible for operations with an account
  */
-class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
+class AccountService(private val accounts: InMemoryStorage) {
 
     private val logger = LogManager.getLogger(javaClass)
 
     private val appConfig = AppConfig.getInstance()
 
-    companion object : SingletonHolder<AccountService, ConcurrentHashMap<UUID, Account>>(::AccountService)
+    companion object : SingletonHolder<AccountService, InMemoryStorage>(::AccountService)
 
     fun createAccount(createRequest: CreateAccountRequest): Account {
         val accountCode = UUID.randomUUID()
@@ -34,13 +34,14 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
         val account = Account(accountCode, createRequest.accountHolder, balance, currency, AccountStatus.OPEN, generateTANs())
         logger.info("Created account: $account")
 
-        accounts[accountCode] = account
+        accounts.store(accountCode, account)
         return account
     }
 
     fun receiveBalance(accountCode: String): BigDecimal {
         val accountUUID = UUID.fromString(accountCode)
-        return accounts.getOrElse(accountUUID) { throw AccountNotFoundException("Incorrect account code") }.balance
+        val account = accounts.find(accountUUID) ?: throw AccountNotFoundException("Incorrect account code")
+        return account.balance
     }
 
     fun changeBalance(changeBalanceRequest: ChangeBalanceRequest): Account {
@@ -66,7 +67,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
     }
 
     fun findAccount(accountCode: UUID): Account =
-        accounts.getOrElse(accountCode) { throw AccountNotFoundException("Account for code $accountCode is not found") }
+        accounts.find(accountCode) ?: throw AccountNotFoundException("Incorrect account code")
 
     private fun changeAccount(accountCode: UUID, tan: String, change: (acc: Account) -> Account): Account? {
         return accounts.computeIfPresent(accountCode) {_, account ->

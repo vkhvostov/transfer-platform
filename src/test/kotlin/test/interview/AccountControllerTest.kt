@@ -9,6 +9,7 @@ import test.interview.controller.AccountController
 import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.service.AccountService
+import test.interview.storage.InMemoryStorage
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -18,10 +19,11 @@ class AccountControllerTest {
 
     companion object {
         private val accounts: ConcurrentHashMap<UUID, Account> = ConcurrentHashMap()
+        private val storage: InMemoryStorage = InMemoryStorage(accounts)
     }
 
     val appConfig = AppConfig.getInstance(Configurations().properties("test-config.properties"))
-    private val accountService: AccountService = AccountService.getInstance(accounts)
+    private val accountService: AccountService = AccountService.getInstance(storage)
     private val accountController: AccountController =
         AccountController()
     private val gson = Gson()
