@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response
  * Created on 19.09.18
  * TODO: Add comment
  */
-class AccountResourceTest {
+class AccountControllerTest {
 
     companion object {
         private val accounts: ConcurrentHashMap<UUID, Account> = ConcurrentHashMap()
@@ -24,7 +24,7 @@ class AccountResourceTest {
 
     val appConfig = AppConfig.getInstance(Configurations().properties("test-config.properties"))
     private val accountService: AccountService = AccountService.getInstance(accounts)
-    private val accountResource: AccountResource = AccountResource()
+    private val accountController: AccountController = AccountController()
     private val gson = Gson()
 
     @Test
@@ -37,7 +37,7 @@ class AccountResourceTest {
                 "\t\"initial_balance\" : $balance,\n" +
                 "\t\"currency\" : \"$currency\"\n" +
                 "}"
-        val response = accountResource.createAccount(request)
+        val response = accountController.createAccount(request)
 
         val actualAccount = gson.fromJson(response.entity.toString(), Account::class.java)
 
@@ -55,7 +55,7 @@ class AccountResourceTest {
         val account = Account(accountCode, "Ryan Sheckler", BigDecimal(balance), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf("555555"))
         accounts[accountCode] = account
 
-        val response = accountResource.receiveAccountBalance(accountCode.toString())
+        val response = accountController.receiveAccountBalance(accountCode.toString())
 
         val actualBalance = response.entity
 
@@ -79,7 +79,7 @@ class AccountResourceTest {
                 "\t\"TAN\" : \"$tan\",\n" +
                 "\t\"note\" : \"Just a balance change\"\n" +
                 "}"
-        val response = accountResource.changeAccountBalance(request)
+        val response = accountController.changeAccountBalance(request)
 
         val actualAccount = gson.fromJson(response.entity.toString(), Account::class.java)
 
@@ -104,7 +104,7 @@ class AccountResourceTest {
                 "\t\"account_code\" : \"$accountCode\",\n" +
                 "\t\"TAN\" : \"$tan\"\n" +
                 "}"
-        val response = accountResource.closeAccount(request)
+        val response = accountController.closeAccount(request)
 
         val actualAccount = gson.fromJson(response.entity.toString(), Account::class.java)
 

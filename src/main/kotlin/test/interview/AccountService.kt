@@ -41,7 +41,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
 
     fun receiveBalance(accountCode: String): BigDecimal {
         val accountUUID = UUID.fromString(accountCode)
-        return accounts.getOrElse(accountUUID) { throw IllegalArgumentException("Incorrect account code") }.balance
+        return accounts.getOrElse(accountUUID) { throw AccountNotFoundException("Incorrect account code") }.balance
     }
 
     fun changeBalance(changeBalanceRequest: ChangeBalanceRequest): Account? {

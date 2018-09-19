@@ -16,10 +16,10 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 /**
- * REST resource class responsible for operations with account
+ * REST controller responsible for operations with account
  */
 @Path("account")
-class AccountResource {
+class AccountController {
 
     private val logger = LogManager.getLogger(javaClass)
 

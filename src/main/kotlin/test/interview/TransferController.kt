@@ -11,11 +11,10 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 /**
- * Created on 14.09.18
- * TODO: Add comment
+ * REST controller responsible for all operation regarding transferring money between accounts
  */
 @Path("transfer")
-class TransferResource {
+class TransferController {
 
     private val logger = LogManager.getLogger(javaClass)
 

@@ -35,7 +35,7 @@ object TransferPlatform {
 
         logger.info("Staring up the server on $host:$port ...")
         val baseUri = UriBuilder.fromUri(host).port(port).build()
-        val config = ResourceConfig(TransferResource::class.java, AccountResource::class.java)
+        val config = ResourceConfig(TransferController::class.java, AccountController::class.java)
         val server = JdkHttpServerFactory.createHttpServer(baseUri, config)
     }
 }
