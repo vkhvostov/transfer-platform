@@ -1,0 +1,217 @@
+swagger: "2.0"
+info:
+  description: "This is a sample implementation of Transfer Service as a test task for a finance company"
+  version: "1.0.0"
+  title: "Transfer Platform"
+  contact:
+    email: "viktor.khvostov@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/"
+tags:
+- name: "account"
+  description: "All operations with an account"
+- name: "transfer"
+  description: "All operation for transferring money"
+schemes:
+- "http"
+paths:
+  /account/create:
+    put:
+      tags:
+      - "account"
+      summary: "Create a new account"
+      description: ""
+      operationId: "createAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Account holder, initial balance and currency for a new account"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateAccountRequest"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Account"
+        400:
+          description: "Invalid input like malformed request or incorrect initial balance"
+  /account/balance/{accountCode}:
+    get:
+      tags:
+      - "account"
+      summary: "Finds an account balance"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findPetsByStatus"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accountCode"
+        in: "path"
+        description: "ID of an account"
+        required: true
+        type: "string"
+        format: "uuid"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "integer"
+        400:
+          description: "Invalid input like malformed request or incorrect account code"
+  /account/balance:
+    post:
+      tags:
+      - "account"
+      summary: "Changes account balance"
+      operationId: "changeAccountBalance"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Account code, new balance, TAN and note for an account"
+        required: true
+        schema:
+          $ref: "#/definitions/ChangeBalanceRequest"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: "Invalid input like malformed request or incorrect account code"
+  /account/close:
+    post:
+      tags:
+      - "account"
+      summary: "Closes an account"
+      operationId: "closeAccount"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Account code and TAN for an account"
+        required: true
+        schema:
+          $ref: "#/definitions/CloseAccountRequest"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: "Invalid input like malformed request or incorrect account code"
+  /transfer/create:
+    post:
+      tags:
+      - "transfer"
+      summary: "Transfers money from one account to another"
+      description: ""
+      operationId: "transfer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "From account code, to account code, amount, currency, TAN and note for an transfer"
+        required: true
+        schema:
+          $ref: "#/definitions/MoneyTransferRequest"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Account"
+definitions:
+  Account:
+    type: "object"
+    properties:
+      code:
+        type: "object"
+        format: "uuid"
+      holder:
+        type: "string"
+      balance:
+        type: "object"
+        format: "bigdecimal"
+      currency:
+        type: "object"
+        format: "currency"
+      status:
+        type: "string"
+        description: "Account Status"
+        enum:
+        - "OPEN"
+        - "CLOSED"
+  CreateAccountRequest:
+    type: "object"
+    properties:
+      account_holder:
+        type: "string"
+      initial_balance:
+        type: "string"
+      currency:
+        type: "string"
+  ChangeBalanceRequest:
+    type: "object"
+    properties:
+      account_code:
+        type: "object"
+        format: "uuid"
+      balance:
+        type: "string"
+      TAN:
+        type: "string"
+      note:
+        type: "string"
+  CloseAccountRequest:
+    type: "object"
+    properties:
+      account_code:
+        type: "object"
+        format: "uuid"
+      TAN:
+        type: "string"
+  MoneyTransferRequest:
+    type: "object"
+    properties:
+      from_account:
+        type: "object"
+        format: "uuid"
+      to_account:
+        type: "object"
+        format: "uuid"
+      amount:
+        type: "object"
+        format: "bigdecimal"
+      currency:
+        type: "object"
+        format: "currency"
+      TAN:
+        type: "string"
+      note:
+        type: "string"
+externalDocs:
+  description: "Info about the task"
+  url: "https://github.com/vkhvostov/transfer-platform/blob/master/README.md"
