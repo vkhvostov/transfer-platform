@@ -7,10 +7,9 @@ import org.glassfish.jersey.server.ResourceConfig
 import test.interview.config.AppConfig
 import test.interview.controller.AccountController
 import test.interview.controller.TransferController
-import test.interview.model.Account
 import test.interview.service.AccountService
 import test.interview.service.TransferService
-import java.util.*
+import test.interview.storage.InMemoryStorage
 import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.UriBuilder
 
@@ -21,7 +20,7 @@ object TransferPlatform {
 
     private val logger = LogManager.getLogger(javaClass)
 
-    private val accounts = ConcurrentHashMap<UUID, Account>()
+    private val accounts = InMemoryStorage(ConcurrentHashMap())
 
     @JvmStatic
     fun main(args: Array<String>) {

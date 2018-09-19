@@ -11,6 +11,7 @@ import test.interview.model.MoneyTransferRequest
 import test.interview.model.exception.InsufficientFundsException
 import test.interview.service.AccountService
 import test.interview.service.TransferService
+import test.interview.storage.InMemoryStorage
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
 class TransferServiceTest {
 
     private lateinit var accounts: ConcurrentHashMap<UUID, Account>
+    private lateinit var storage: InMemoryStorage
     private lateinit var accountService: AccountService
     private lateinit var transferService: TransferService
 
@@ -25,7 +27,8 @@ class TransferServiceTest {
     fun setUp() {
         AppConfig.getInstance(Configurations().properties("test-config.properties"))
         accounts = ConcurrentHashMap()
-        accountService = AccountService(accounts)
+        storage = InMemoryStorage(accounts)
+        accountService = AccountService(storage)
         transferService = TransferService(accountService)
     }
 
