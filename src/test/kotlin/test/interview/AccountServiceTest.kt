@@ -91,6 +91,14 @@ class AccountServiceTest {
     }
 
     @Test(expected = IllegalOperation::class)
+    fun `Unsuccessful attempt to changed the balance due to a negative balance`() {
+        val accountCode = UUID.randomUUID()
+        val balance = "-500"
+        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, "", "Just a change")
+        accountService.changeBalance(changeBalanceRequest)
+    }
+
+    @Test(expected = IllegalOperation::class)
     fun `Unsuccessful attempt to changed the balance due to an incorrect TAN`() {
         val accountCode = UUID.randomUUID()
         val tan = "555555"

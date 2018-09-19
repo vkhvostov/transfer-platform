@@ -57,6 +57,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
     }
 
     fun changeBalance(accountCode: UUID, newBalance: BigDecimal, tan: String): Account {
+        if (newBalance < BigDecimal.ZERO) throw IllegalOperation("New account balance cannot be negative")
         return changeAccount(
             accountCode,
             tan
