@@ -41,6 +41,15 @@ class AccountServiceTest {
         Assert.assertEquals(expectedAccount, actualAccount)
     }
 
+    @Test(expected = IllegalOperation::class)
+    fun `Unsuccessful attempt to create an account due to negative initial balance`() {
+        val accountHolder = "Acc Holder"
+        val balance = "-500"
+        val currency = "EUR"
+        val createAccountRequest = CreateAccountRequest(accountHolder, balance, currency)
+        accountService.createAccount(createAccountRequest)
+    }
+
     @Test
     fun `Successfully received a balance`() {
         val balance = BigDecimal(300)

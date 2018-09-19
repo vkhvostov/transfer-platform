@@ -29,6 +29,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
     fun createAccount(createRequest: CreateAccountRequest): Account {
         val accountCode = UUID.randomUUID()
         val balance = BigDecimal(createRequest.initialBalance)
+        if (balance < BigDecimal.ZERO) throw IllegalOperation("Initial account balance is bellow zero")
         val currency = Currency.getInstance(createRequest.currency)
         val account = Account(accountCode, createRequest.accountHolder, balance, currency, AccountStatus.OPEN, generateTANs())
         logger.info("Created account: $account")
