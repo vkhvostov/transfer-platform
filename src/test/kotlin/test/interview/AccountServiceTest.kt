@@ -10,6 +10,8 @@ import test.interview.model.AccountStatus
 import test.interview.model.ChangeBalanceRequest
 import test.interview.model.CloseAccountRequest
 import test.interview.model.CreateAccountRequest
+import test.interview.model.exception.AccountNotFoundException
+import test.interview.model.exception.IllegalOperation
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -27,7 +29,7 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `Successfully created account`() {
+    fun `Successfully created an account`() {
         val accountHolder = "Acc Holder"
         val balance = "500"
         val currency = "EUR"
@@ -40,7 +42,7 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `Successfully received balance`() {
+    fun `Successfully received a balance`() {
         val balance = BigDecimal(300)
         val accountCode = UUID.randomUUID()
         val account = Account(accountCode, "Holder", balance, Currency.getInstance("EUR"), AccountStatus.OPEN, listOf("555555"))
@@ -51,6 +53,11 @@ class AccountServiceTest {
         Assert.assertEquals(balance, actualBalance)
     }
 
+    @Test(expected = AccountNotFoundException::class)
+    fun `Unsuccessful attempt to received balance due to incorrect account code`() {
+        accountService.receiveBalance(UUID.randomUUID().toString())
+    }
+
     @Test
     fun `Successfully changed balance`() {
         val accountCode = UUID.randomUUID()
@@ -59,15 +66,47 @@ class AccountServiceTest {
         accounts[accountCode] = account
 
         val balance = "500"
-        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, tan, "Just a transfer")
+        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, tan, "Just a change")
         val actualAccount = accountService.changeBalance(changeBalanceRequest)
         val expectedAccount = account.copy(balance = BigDecimal(balance))
 
         Assert.assertEquals(expectedAccount, actualAccount)
     }
 
+    @Test(expected = AccountNotFoundException::class)
+    fun `Unsuccessful attempt to changed the balance due to an incorrect account code`() {
+        val accountCode = UUID.randomUUID()
+        val balance = "500"
+        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, "", "Just a change")
+        accountService.changeBalance(changeBalanceRequest)
+    }
+
+    @Test(expected = IllegalOperation::class)
+    fun `Unsuccessful attempt to changed the balance due to an incorrect TAN`() {
+        val accountCode = UUID.randomUUID()
+        val tan = "555555"
+        val account = Account(accountCode, "Holder", BigDecimal(300), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
+        accounts[accountCode] = account
+
+        val balance = "500"
+        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, "", "Just a change")
+        accountService.changeBalance(changeBalanceRequest)
+    }
+
+    @Test(expected = IllegalOperation::class)
+    fun `Unsuccessful attempt to changed the balance because account is already closed`() {
+        val accountCode = UUID.randomUUID()
+        val tan = "555555"
+        val account = Account(accountCode, "Holder", BigDecimal(300), Currency.getInstance("EUR"), AccountStatus.CLOSED, listOf(tan))
+        accounts[accountCode] = account
+
+        val balance = "500"
+        val changeBalanceRequest = ChangeBalanceRequest(accountCode, balance, tan, "Just a change")
+        accountService.changeBalance(changeBalanceRequest)
+    }
+
     @Test
-    fun `Successfully close account`() {
+    fun `Successfully close an account`() {
         val accountCode = UUID.randomUUID()
         val tan = "555555"
         val account = Account(accountCode, "Holder", BigDecimal(300), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
@@ -80,8 +119,15 @@ class AccountServiceTest {
         Assert.assertEquals(expectedAccount, actualAccount)
     }
 
+    @Test(expected = AccountNotFoundException::class)
+    fun `Unsuccessful attempt to close an account due to an incorrect account code`() {
+        val accountCode = UUID.randomUUID()
+        val closeAccountRequest = CloseAccountRequest(accountCode, "")
+        accountService.closeAccount(closeAccountRequest)
+    }
+
     @Test
-    fun findAccount() {
+    fun `Successfully finds an account`() {
         val accountCode = UUID.randomUUID()
         val account = Account(accountCode, "Holder", BigDecimal(300), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf("555555"))
         accounts[accountCode] = account
@@ -89,5 +135,11 @@ class AccountServiceTest {
         val actualAccount = accountService.findAccount(accountCode)
 
         Assert.assertEquals(account, actualAccount)
+    }
+
+    @Test(expected = AccountNotFoundException::class)
+    fun `Unsuccessful attempt to find an account due to incorrect account code`() {
+        val accountCode = UUID.randomUUID()
+        accountService.findAccount(accountCode)
     }
 }

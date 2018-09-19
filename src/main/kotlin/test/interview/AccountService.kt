@@ -44,23 +44,25 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
         return accounts.getOrElse(accountUUID) { throw AccountNotFoundException("Incorrect account code") }.balance
     }
 
-    fun changeBalance(changeBalanceRequest: ChangeBalanceRequest): Account? {
+    fun changeBalance(changeBalanceRequest: ChangeBalanceRequest): Account {
         val newBalance = BigDecimal(changeBalanceRequest.balance)
         return changeBalance(changeBalanceRequest.accountCode, newBalance, changeBalanceRequest.tan)
     }
 
-    fun closeAccount(closeAccountRequest: CloseAccountRequest): Account? {
+    fun closeAccount(closeAccountRequest: CloseAccountRequest): Account {
         return changeAccount(
             closeAccountRequest.accountCode,
             closeAccountRequest.tan
         ) { acc -> acc.copy(status = AccountStatus.CLOSED) }
+        ?: throw AccountNotFoundException("Incorrect account code")
     }
 
-    fun changeBalance(accountCode: UUID, newBalance: BigDecimal, tan: String): Account? {
+    fun changeBalance(accountCode: UUID, newBalance: BigDecimal, tan: String): Account {
         return changeAccount(
             accountCode,
             tan
         ) { acc -> acc.copy(balance = newBalance) }
+        ?: throw AccountNotFoundException("Incorrect account code")
     }
 
     fun findAccount(accountCode: UUID): Account =

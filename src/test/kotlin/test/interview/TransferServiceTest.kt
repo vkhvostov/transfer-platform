@@ -8,6 +8,7 @@ import test.interview.config.AppConfig
 import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.model.MoneyTransferRequest
+import test.interview.model.exception.InsufficientFundsException
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -50,5 +51,25 @@ class TransferServiceTest {
         val actualUpdatedAccounts = transferService.transfer(moneyTransferRequest)
 
         Assert.assertTrue(expectedUpdatedAccounts.containsAll(actualUpdatedAccounts))
+    }
+
+    @Test(expected = InsufficientFundsException::class)
+    fun `Unsuccessful attempt to transfer money when sender has not enough funds`() {
+        val fromAccountCode = UUID.randomUUID()
+        val currency = Currency.getInstance("EUR")
+        val balance = BigDecimal(500)
+        val tan = "555555"
+        val fromAccount = Account(fromAccountCode, "Rodney Mullen", balance, currency, AccountStatus.OPEN, listOf(tan))
+        accounts[fromAccountCode] = fromAccount
+
+        val toAccountCode = UUID.randomUUID()
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        accounts[toAccountCode] = toAccount
+
+        val transferAmount = BigDecimal(700)
+        val moneyTransferRequest =
+            MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
+
+        transferService.transfer(moneyTransferRequest)
     }
 }
