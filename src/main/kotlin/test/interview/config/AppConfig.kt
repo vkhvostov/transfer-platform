@@ -3,8 +3,7 @@ package test.interview.config
 import org.apache.commons.configuration2.PropertiesConfiguration
 
 /**
- * Created on 17.09.18
- * TODO: Add comment
+ * Application properties holder class
  */
 class AppConfig(properties: PropertiesConfiguration) {
 

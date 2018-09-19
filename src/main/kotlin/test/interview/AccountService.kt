@@ -16,8 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
 /**
- * Created on 15.09.18
- * TODO: Add comment
+ * Service responsible for operations with an account
  */
 class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
 
@@ -27,7 +26,6 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
 
     companion object : SingletonHolder<AccountService, ConcurrentHashMap<UUID, Account>>(::AccountService)
 
-    // returns null when new account is created
     fun createAccount(createRequest: CreateAccountRequest): Account {
         val accountCode = UUID.randomUUID()
         val balance = BigDecimal(createRequest.initialBalance)

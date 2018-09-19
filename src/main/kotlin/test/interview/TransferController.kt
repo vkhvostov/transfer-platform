@@ -27,7 +27,6 @@ class TransferController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun transfer(request: String): Response {
-        // from, to, amount, currency, secret word from, note
         return try {
             logger.info("Staring money transfer")
             val transferRequest = gson.fromJson(request, MoneyTransferRequest::class.java)

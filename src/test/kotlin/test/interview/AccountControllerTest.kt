@@ -12,10 +12,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.ws.rs.core.Response
 
-/**
- * Created on 19.09.18
- * TODO: Add comment
- */
 class AccountControllerTest {
 
     companion object {
@@ -165,6 +161,14 @@ class AccountControllerTest {
                 "\t\"TAN\" : \"$tan\"\n" +
                 "}"
         val response = accountController.closeAccount(request)
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
+
+    @Test
+    fun `Unsuccessful attempt to call API due to malformed syntax`() {
+        val request = "{ }"
+        val response = accountController.createAccount(request)
 
         Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
     }

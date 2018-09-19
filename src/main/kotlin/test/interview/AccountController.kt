@@ -32,7 +32,6 @@ class AccountController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun createAccount(request: String): Response {
-        // account holder, initial balance (optional), currency, account code (optional), secret word (TAN))
         return try {
             logger.info("Incoming request: $request")
             val createRequest = gson.fromJson(request, CreateAccountRequest::class.java)
@@ -66,7 +65,6 @@ class AccountController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun changeAccountBalance(request: String): Response {
-        // account code, new balance, secret word, note
         return try {
             logger.info("Incoming request: $request")
             val changeBalanceRequest = gson.fromJson(request, ChangeBalanceRequest::class.java)
@@ -87,7 +85,6 @@ class AccountController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun closeAccount(request: String): Response {
-        // account code, secret word (TAN)
         return try {
             val closeAccountRequest = gson.fromJson(request, CloseAccountRequest::class.java)
             val account = accountService.closeAccount(closeAccountRequest)

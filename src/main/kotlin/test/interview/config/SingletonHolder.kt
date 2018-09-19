@@ -1,8 +1,7 @@
 package test.interview.config
 
 /**
- * Created on 18.09.18
- * TODO: Add comment
+ * Holder for singletons using double-checked locking
  */
 open class SingletonHolder<out T, in A>(creator: (A) -> T) {
     private var creator: ((A) -> T)? = creator

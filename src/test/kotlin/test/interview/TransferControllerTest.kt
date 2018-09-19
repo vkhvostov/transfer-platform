@@ -29,13 +29,13 @@ class TransferControllerTest {
     fun `Successfully transfers money from one account to another`() {
         val tan = "555555"
         val fromAccountCode = UUID.randomUUID()
-        val fromAccount = Account(fromAccountCode, "Ryan Sheckler", BigDecimal(500), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
+        val fromAccount = Account(fromAccountCode, "Ryan Sheckler", BigDecimal(500.50), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
         accounts[fromAccountCode] = fromAccount
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Rodney Mullen", BigDecimal(500), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
+        val toAccount = Account(toAccountCode, "Rodney Mullen", BigDecimal(500.30), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
-        val amount = "400"
+        val amount = "400.25"
 
         val request = "{\n" +
                 "\t\"from_account\": \"$fromAccountCode\",\n" +

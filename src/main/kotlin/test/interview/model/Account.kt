@@ -4,10 +4,6 @@ import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.util.*
 
-/**
- * Created on 14.09.18
- * TODO: Add comment
- */
 data class Account(
     @SerializedName("code") val code: UUID,
     @SerializedName("holder") val holder: String,
