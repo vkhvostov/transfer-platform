@@ -24,7 +24,7 @@ class TransferService(private val accountService: AccountService) {
         val fromAccountBalance = fromAccount.balance
         val newFromAccountBalance = fromAccountBalance.subtract(transferRequest.amount)
 
-        if (newFromAccountBalance < BigDecimal.ONE)
+        if (newFromAccountBalance < BigDecimal.ZERO)
             throw InsufficientFundsException("Account ${fromAccount.code} has insufficient funds for this transaction")
 
         val updatedFromAccount =

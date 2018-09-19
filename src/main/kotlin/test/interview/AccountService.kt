@@ -28,7 +28,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
     companion object : SingletonHolder<AccountService, ConcurrentHashMap<UUID, Account>>(::AccountService)
 
     // returns null when new account is created
-    fun createAccount(createRequest: CreateAccountRequest): UUID {
+    fun createAccount(createRequest: CreateAccountRequest): Account {
         val accountCode = UUID.randomUUID()
         val balance = BigDecimal(createRequest.initialBalance)
         val currency = Currency.getInstance(createRequest.currency)
@@ -36,7 +36,7 @@ class AccountService(private val accounts: ConcurrentHashMap<UUID, Account>) {
         logger.info("Created account: $account")
 
         accounts[accountCode] = account
-        return accountCode
+        return account
     }
 
     fun receiveBalance(accountCode: String): BigDecimal {

@@ -32,10 +32,9 @@ class AccountServiceTest {
         val balance = "500"
         val currency = "EUR"
         val createAccountRequest = CreateAccountRequest(accountHolder, balance, currency)
-        val createdAccountCode = accountService.createAccount(createAccountRequest)
+        val actualAccount = accountService.createAccount(createAccountRequest)
 
-        val expectedAccount = Account(createdAccountCode, accountHolder, BigDecimal(balance), Currency.getInstance(currency), AccountStatus.OPEN, listOf("555555"))
-        val actualAccount = accounts[createdAccountCode]
+        val expectedAccount = Account(actualAccount.code, accountHolder, BigDecimal(balance), Currency.getInstance(currency), AccountStatus.OPEN, listOf("555555"))
 
         Assert.assertEquals(expectedAccount, actualAccount)
     }
