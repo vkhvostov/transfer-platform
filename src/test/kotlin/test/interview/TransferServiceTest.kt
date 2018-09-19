@@ -9,6 +9,8 @@ import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.model.MoneyTransferRequest
 import test.interview.model.exception.InsufficientFundsException
+import test.interview.service.AccountService
+import test.interview.service.TransferService
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

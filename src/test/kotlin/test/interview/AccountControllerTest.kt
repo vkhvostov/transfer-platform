@@ -5,8 +5,10 @@ import org.apache.commons.configuration2.builder.fluent.Configurations
 import org.junit.Assert
 import org.junit.Test
 import test.interview.config.AppConfig
+import test.interview.controller.AccountController
 import test.interview.model.Account
 import test.interview.model.AccountStatus
+import test.interview.service.AccountService
 import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -20,7 +22,8 @@ class AccountControllerTest {
 
     val appConfig = AppConfig.getInstance(Configurations().properties("test-config.properties"))
     private val accountService: AccountService = AccountService.getInstance(accounts)
-    private val accountController: AccountController = AccountController()
+    private val accountController: AccountController =
+        AccountController()
     private val gson = Gson()
 
     @Test

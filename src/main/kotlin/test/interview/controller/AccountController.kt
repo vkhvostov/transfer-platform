@@ -1,7 +1,8 @@
-package test.interview
+package test.interview.controller
 
 import com.google.gson.Gson
 import org.apache.logging.log4j.LogManager
+import test.interview.service.AccountService
 import test.interview.model.ChangeBalanceRequest
 import test.interview.model.CloseAccountRequest
 import test.interview.model.CreateAccountRequest

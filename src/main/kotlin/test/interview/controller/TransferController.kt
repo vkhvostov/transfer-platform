@@ -1,8 +1,9 @@
-package test.interview
+package test.interview.controller
 
 import com.google.gson.Gson
 import org.apache.logging.log4j.LogManager
 import test.interview.model.MoneyTransferRequest
+import test.interview.service.TransferService
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path

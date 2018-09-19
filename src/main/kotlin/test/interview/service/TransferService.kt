@@ -1,4 +1,4 @@
-package test.interview
+package test.interview.service
 
 import org.apache.logging.log4j.LogManager
 import test.interview.config.SingletonHolder
