@@ -1,6 +1,7 @@
 package test.interview
 
 import arrow.core.None
+import arrow.core.Some
 import org.apache.commons.configuration2.builder.fluent.Configurations
 import org.junit.Assert
 import org.junit.Before
@@ -49,14 +50,15 @@ class TransferServiceTest {
         val moneyTransferRequest =
             MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
 
-        val expectedUpdatedAccounts = listOf(
-            fromAccount.copy(balance = balance - transferAmount),
-            toAccount.copy(balance = balance + transferAmount)
+        val expectedUpdatedAccounts = Pair(
+            Some(fromAccount.copy(balance = balance - transferAmount)),
+            Some(toAccount.copy(balance = balance + transferAmount))
         )
         val actualUpdatedAccounts = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(actualUpdatedAccounts.filter { it.nonEmpty() }.size == 2)
-        Assert.assertTrue(expectedUpdatedAccounts.containsAll(actualUpdatedAccounts.flatMap { it.toList() }))
+        Assert.assertTrue(actualUpdatedAccounts.first.isDefined())
+        Assert.assertTrue(actualUpdatedAccounts.second.isDefined())
+        Assert.assertEquals(expectedUpdatedAccounts, actualUpdatedAccounts)
     }
 
     @Test
@@ -78,7 +80,8 @@ class TransferServiceTest {
 
         val transfer = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(transfer.all { it is None })
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
     }
 
     @Test
@@ -98,7 +101,8 @@ class TransferServiceTest {
 
         val transfer = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(transfer.all { it is None })
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
     }
 
     @Test
@@ -118,6 +122,7 @@ class TransferServiceTest {
 
         val transfer = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(transfer.all { it is None })
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
     }
 }

@@ -1,5 +1,6 @@
 package test.interview.controller
 
+import arrow.core.getOrElse
 import com.google.gson.Gson
 import org.apache.logging.log4j.LogManager
 import test.interview.model.MoneyTransferRequest
@@ -28,23 +29,22 @@ class TransferController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun transfer(request: String): Response {
-        try {
+        return try {
             logger.info("Staring money transfer")
             val transferRequest = gson.fromJson(request, MoneyTransferRequest::class.java)
 
             val updatedAccounts = transferService.transfer(transferRequest)
 
-            val accounts = updatedAccounts.flatMap { it.toList() }
-            return if (accounts.isNotEmpty()) {
-                val response = gson.toJson(accounts)
-                logger.info("Transfer successfully finished")
-                Response.ok(response).build()
-            } else {
-                Response.status(Response.Status.BAD_REQUEST).build()
+            updatedAccounts.first.flatMap { from ->
+                updatedAccounts.second.map { to ->
+                    gson.toJson(listOf(from, to)).also { logger.info("Transfer successfully finished") }
+                }
             }
+                .map { Response.ok(it).build() }
+                .getOrElse { Response.status(Response.Status.BAD_REQUEST).build() }
         } catch (e: Exception) {
             logger.error("Error while transferring money", e)
-            return Response.status(Response.Status.BAD_REQUEST).build()
+            Response.status(Response.Status.BAD_REQUEST).build()
         }
     }
 }
