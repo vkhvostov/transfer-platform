@@ -65,8 +65,7 @@ class AccountService(private val accounts: InMemoryStorage) {
         ) { acc -> acc.copy(balance = newBalance) }
     }
 
-    fun findAccount(accountCode: UUID): Option<Account> =
-        accounts.find(accountCode)
+    fun findAccount(accountCode: UUID): Option<Account> = accounts.find(accountCode)
 
     private fun changeAccount(accountCode: UUID, tan: String, change: (acc: Account) -> Account): Option<Account> {
         return accounts.updateIfPresent(accountCode) { _, account ->
