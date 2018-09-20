@@ -21,6 +21,12 @@ apply plugin: 'kotlin'
 
 sourceCompatibility = 1.8
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'test.interview.TransferPlatform'
+    }
+}
+
 repositories {
     mavenCentral()
     jcenter()
