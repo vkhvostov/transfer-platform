@@ -1,5 +1,6 @@
 package test.interview
 
+import arrow.core.None
 import org.apache.commons.configuration2.builder.fluent.Configurations
 import org.junit.Assert
 import org.junit.Before
@@ -8,7 +9,6 @@ import test.interview.config.AppConfig
 import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.model.MoneyTransferRequest
-import test.interview.model.exception.InsufficientFundsException
 import test.interview.service.AccountService
 import test.interview.service.TransferService
 import test.interview.storage.InMemoryStorage
@@ -55,10 +55,11 @@ class TransferServiceTest {
         )
         val actualUpdatedAccounts = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(expectedUpdatedAccounts.containsAll(actualUpdatedAccounts))
+        Assert.assertTrue(actualUpdatedAccounts.filter { it.nonEmpty() }.size == 2)
+        Assert.assertTrue(expectedUpdatedAccounts.containsAll(actualUpdatedAccounts.flatMap { it.toList() }))
     }
 
-    @Test(expected = InsufficientFundsException::class)
+    @Test
     fun `Unsuccessful attempt to transfer money when sender has not enough funds`() {
         val fromAccountCode = UUID.randomUUID()
         val currency = Currency.getInstance("EUR")
@@ -75,6 +76,48 @@ class TransferServiceTest {
         val moneyTransferRequest =
             MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
 
-        transferService.transfer(moneyTransferRequest)
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.all { it is None })
+    }
+
+    @Test
+    fun `Unsuccessful attempt to transfer money when sender is not exist`() {
+        val fromAccountCode = UUID.randomUUID()
+        val currency = Currency.getInstance("EUR")
+        val balance = BigDecimal(500)
+        val tan = "555555"
+
+        val toAccountCode = UUID.randomUUID()
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        accounts[toAccountCode] = toAccount
+
+        val transferAmount = BigDecimal(100)
+        val moneyTransferRequest =
+            MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
+
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.all { it is None })
+    }
+
+    @Test
+    fun `Unsuccessful attempt to transfer money when receiver is not exist`() {
+        val fromAccountCode = UUID.randomUUID()
+        val currency = Currency.getInstance("EUR")
+        val balance = BigDecimal(500)
+        val tan = "555555"
+        val fromAccount = Account(fromAccountCode, "Rodney Mullen", balance, currency, AccountStatus.OPEN, listOf(tan))
+        accounts[fromAccountCode] = fromAccount
+
+        val toAccountCode = UUID.randomUUID()
+
+        val transferAmount = BigDecimal(100)
+        val moneyTransferRequest =
+            MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
+
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.all { it is None })
     }
 }

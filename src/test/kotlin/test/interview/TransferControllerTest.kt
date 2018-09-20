@@ -90,4 +90,36 @@ class TransferControllerTest {
 
         Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
     }
+
+    @Test
+    fun `Unsuccessful attempt to transfers money from one account to another because sender does not exist`() {
+        val tan = "555555"
+        val fromAccountCode = UUID.randomUUID()
+        val toAccountCode = UUID.randomUUID()
+        val toAccount = Account(toAccountCode, "Rodney Mullen", BigDecimal(500), Currency.getInstance("EUR"), AccountStatus.OPEN, listOf(tan))
+        accounts[toAccountCode] = toAccount
+
+        val amount = "400"
+
+        val request = "{\n" +
+                "\t\"from_account\": \"$fromAccountCode\",\n" +
+                "\t\"to_account\": \"$toAccountCode\",\n" +
+                "\t\"amount\": $amount,\n" +
+                "\t\"currency\": \"USD\",\n" +
+                "\t\"TAN\": \"wrong tan\",\n" +
+                "\t\"note\": \"Just a transfer\"\n" +
+                "}"
+
+        val response = transferController.transfer(request)
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
+
+    @Test
+    fun `Unsuccessful attempt to transfers money from one account to another due to malformed syntax`() {
+        val request = "{}"
+        val response = transferController.transfer(request)
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
 }

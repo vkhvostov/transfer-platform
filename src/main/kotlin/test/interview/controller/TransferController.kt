@@ -28,15 +28,23 @@ class TransferController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun transfer(request: String): Response {
-        return try {
+        try {
             logger.info("Staring money transfer")
             val transferRequest = gson.fromJson(request, MoneyTransferRequest::class.java)
-            val response = gson.toJson(transferService.transfer(transferRequest))
-            logger.info("Transfer successfully finished")
-            Response.ok(response).build()
+
+            val updatedAccounts = transferService.transfer(transferRequest)
+
+            val accounts = updatedAccounts.flatMap { it.toList() }
+            return if (accounts.isNotEmpty()) {
+                val response = gson.toJson(accounts)
+                logger.info("Transfer successfully finished")
+                Response.ok(response).build()
+            } else {
+                Response.status(Response.Status.BAD_REQUEST).build()
+            }
         } catch (e: Exception) {
             logger.error("Error while transferring money", e)
-            Response.status(Response.Status.BAD_REQUEST).build()
+            return Response.status(Response.Status.BAD_REQUEST).build()
         }
     }
 }

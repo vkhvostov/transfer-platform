@@ -65,6 +65,21 @@ class AccountControllerTest {
     }
 
     @Test
+    fun `Unsuccessful attempt to create an account due to a negative initial balance`() {
+        val holder = "Chris Haslam"
+        val balance = -500
+        val currency = "EUR"
+        val request = "{\n" +
+                "\t\"account_holder\" : \"$holder\",\n" +
+                "\t\"initial_balance\" : $balance,\n" +
+                "\t\"currency\" : \"$currency\"\n" +
+                "}"
+        val response = accountController.createAccount(request)
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
+
+    @Test
     fun `Successfully receives an account balance`() {
         val balance = "300"
         val accountCode = UUID.randomUUID()
@@ -80,9 +95,16 @@ class AccountControllerTest {
     }
 
     @Test
-    fun `Unsuccessfully attempt to receive ab account balance due to an incorrect account code`() {
+    fun `Unsuccessfully attempt to receive an account balance due to an incorrect account code`() {
         val accountCode = UUID.randomUUID()
         val response = accountController.receiveAccountBalance(accountCode.toString())
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
+
+    @Test
+    fun `Unsuccessfully attempt to receive an account balance due to malformed syntax`() {
+        val response = accountController.receiveAccountBalance("///")
 
         Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
     }
@@ -132,6 +154,13 @@ class AccountControllerTest {
     }
 
     @Test
+    fun `Unsuccessful attempt to change an account balance due to malformed syntax`() {
+        val response = accountController.changeAccountBalance("{ some info }")
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
+    }
+
+    @Test
     fun `Successfully closes an account`() {
         val accountCode = UUID.randomUUID()
         val holder = "Ryan Sheckler"
@@ -172,8 +201,8 @@ class AccountControllerTest {
 
     @Test
     fun `Unsuccessful attempt to call API due to malformed syntax`() {
-        val request = "{ }"
-        val response = accountController.createAccount(request)
+        val request = "{ some info }"
+        val response = accountController.closeAccount(request)
 
         Assert.assertEquals(Response.Status.BAD_REQUEST.statusCode, response.status)
     }
