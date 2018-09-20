@@ -42,7 +42,7 @@ class AccountService(private val accounts: InMemoryStorage) {
     fun receiveBalance(accountCode: String): Option<BigDecimal> {
         val accountUUID = UUID.fromString(accountCode)
         val account = accounts.find(accountUUID)
-        return if (account is Some) Some(account.t.balance) else None
+        return if (account is Some) Some(account.t.balance) else None.also { logger.error("Incorrect account code") }
     }
 
     fun changeBalance(changeBalanceRequest: ChangeBalanceRequest): Option<Account> {
