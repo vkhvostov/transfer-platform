@@ -42,7 +42,7 @@ class TransferServiceTest {
         accounts[fromAccountCode] = fromAccount
 
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
         val transferAmount = BigDecimal(350)
@@ -69,7 +69,7 @@ class TransferServiceTest {
         accounts[fromAccountCode] = fromAccount
 
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
         val transferAmount = BigDecimal(700)
@@ -89,7 +89,7 @@ class TransferServiceTest {
         val tan = "555555"
 
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
         val transferAmount = BigDecimal(100)
