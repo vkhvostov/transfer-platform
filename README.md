@@ -21,3 +21,11 @@ Implicit requirements:
 
 1. the code produced by you is expected to be of high quality.
 1. there are no detailed requirements, use common sense.
+
+
+How to run:
+
+
+To start an application just clone the repo and run `./gradlew run`
+
+API definition can be found in `api/swagger.yaml`
