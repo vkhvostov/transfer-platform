@@ -1,5 +1,7 @@
 package test.interview
 
+import arrow.core.None
+import arrow.core.Some
 import org.apache.commons.configuration2.builder.fluent.Configurations
 import org.junit.Assert
 import org.junit.Before
@@ -8,7 +10,6 @@ import test.interview.config.AppConfig
 import test.interview.model.Account
 import test.interview.model.AccountStatus
 import test.interview.model.MoneyTransferRequest
-import test.interview.model.exception.InsufficientFundsException
 import test.interview.service.AccountService
 import test.interview.service.TransferService
 import test.interview.storage.InMemoryStorage
@@ -42,23 +43,25 @@ class TransferServiceTest {
         accounts[fromAccountCode] = fromAccount
 
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
         val transferAmount = BigDecimal(350)
         val moneyTransferRequest =
             MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
 
-        val expectedUpdatedAccounts = listOf(
-            fromAccount.copy(balance = balance - transferAmount),
-            toAccount.copy(balance = balance + transferAmount)
+        val expectedUpdatedAccounts = Pair(
+            Some(fromAccount.copy(balance = balance - transferAmount)),
+            Some(toAccount.copy(balance = balance + transferAmount))
         )
         val actualUpdatedAccounts = transferService.transfer(moneyTransferRequest)
 
-        Assert.assertTrue(expectedUpdatedAccounts.containsAll(actualUpdatedAccounts))
+        Assert.assertTrue(actualUpdatedAccounts.first.isDefined())
+        Assert.assertTrue(actualUpdatedAccounts.second.isDefined())
+        Assert.assertEquals(expectedUpdatedAccounts, actualUpdatedAccounts)
     }
 
-    @Test(expected = InsufficientFundsException::class)
+    @Test
     fun `Unsuccessful attempt to transfer money when sender has not enough funds`() {
         val fromAccountCode = UUID.randomUUID()
         val currency = Currency.getInstance("EUR")
@@ -68,13 +71,58 @@ class TransferServiceTest {
         accounts[fromAccountCode] = fromAccount
 
         val toAccountCode = UUID.randomUUID()
-        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan)) // TODO: Make list of tans empty
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
         accounts[toAccountCode] = toAccount
 
         val transferAmount = BigDecimal(700)
         val moneyTransferRequest =
             MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
 
-        transferService.transfer(moneyTransferRequest)
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
+    }
+
+    @Test
+    fun `Unsuccessful attempt to transfer money when sender is not exist`() {
+        val fromAccountCode = UUID.randomUUID()
+        val currency = Currency.getInstance("EUR")
+        val balance = BigDecimal(500)
+        val tan = "555555"
+
+        val toAccountCode = UUID.randomUUID()
+        val toAccount = Account(toAccountCode, "Deawon Song", balance, currency, AccountStatus.OPEN, listOf(tan))
+        accounts[toAccountCode] = toAccount
+
+        val transferAmount = BigDecimal(100)
+        val moneyTransferRequest =
+            MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
+
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
+    }
+
+    @Test
+    fun `Unsuccessful attempt to transfer money when receiver is not exist`() {
+        val fromAccountCode = UUID.randomUUID()
+        val currency = Currency.getInstance("EUR")
+        val balance = BigDecimal(500)
+        val tan = "555555"
+        val fromAccount = Account(fromAccountCode, "Rodney Mullen", balance, currency, AccountStatus.OPEN, listOf(tan))
+        accounts[fromAccountCode] = fromAccount
+
+        val toAccountCode = UUID.randomUUID()
+
+        val transferAmount = BigDecimal(100)
+        val moneyTransferRequest =
+            MoneyTransferRequest(fromAccountCode, toAccountCode, transferAmount, currency, tan, "Just a transfer")
+
+        val transfer = transferService.transfer(moneyTransferRequest)
+
+        Assert.assertTrue(transfer.first is None )
+        Assert.assertTrue(transfer.second is None )
     }
 }
